@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+venv/
+*.png
+*.pdf
+data/*.csv
+data/*.json
+.pytest_cache/
