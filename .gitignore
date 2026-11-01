@@ -9,3 +9,4 @@ venv/
 data/*.csv
 data/*.json
 .pytest_cache/
+pytest-cache-files-*/

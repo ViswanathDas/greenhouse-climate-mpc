@@ -91,19 +91,34 @@ class GreenhouseEKF:
 
         Parameters
         ----------
-        y : array [2,]  Measured [T_air, H]
+        y : array [2,]  Measured [T_air, H]. A channel that is missing
+            (sensor dropout) is passed as NaN. Only the available channels
+            are used; if none are available the update is skipped and the
+            filter runs on the model prediction alone, so the covariance
+            grows until measurements return.
+
+        Returns
+        -------
+        innovation : array [2,] with NaN for missing channels
         """
-        C = self.C
-        S = C @ self.P @ C.T + self.R          # Innovation covariance
-        K = self.P @ C.T @ np.linalg.inv(S)    # Kalman gain
+        y = np.asarray(y, dtype=float)
+        ok = ~np.isnan(y)
+        innovation = np.full(self.m, np.nan)
+        if not ok.any():
+            return innovation
 
-        y_hat = C @ self.x                     # Predicted measurement
-        innovation = y - y_hat
+        C = self.C[ok]
+        R = self.R[np.ix_(ok, ok)]
+        S = C @ self.P @ C.T + R                 # innovation covariance
+        K = self.P @ C.T @ np.linalg.inv(S)      # Kalman gain
 
-        self.x = self.x + K @ innovation
+        innov_ok = y[ok] - C @ self.x
+        self.x = self.x + K @ innov_ok
         I_KC = np.eye(self.n) - K @ C
-        self.P = I_KC @ self.P                 # Joseph form: I_KC @ P @ I_KC.T + K @ R @ K.T (numerically stable)
+        # Joseph form keeps P symmetric positive definite
+        self.P = I_KC @ self.P @ I_KC.T + K @ R @ K.T
 
+        innovation[ok] = innov_ok
         return innovation
 
     @property

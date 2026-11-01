@@ -31,8 +31,8 @@ class GreenhouseParams:
     volume: float = 5000.0            # [m³]  (air volume)
 
     # Thermal capacities
-    C_air: float = 1.2e3             # [J/(m² K)]  air + crops + soil top layer
-    C_cov: float = 0.8e3             # [J/(m² K)]  glass cover
+    C_air: float = 1.0e4             # [J/(m² K)]  air (5 m x 1.2 kg/m³ x 1006 J/kgK ≈ 6.0e3) + canopy
+    C_cov: float = 8.4e3             # [J/(m² K)]  4 mm glass (2500 kg/m³ x 840 J/kgK x 0.004 m)
 
     # Heat transfer coefficients
     U_pipe: float = 1.0              # [—]  pipe-to-air efficiency (fraction of u_heat absorbed by air)
@@ -112,9 +112,9 @@ def greenhouse_ode(t, x, u, d, params: GreenhouseParams):
     W_et = ET * A                                              # [g/s]
 
     # Ventilation humidity exchange
-    W_vent = vent_rate * p.rho_air * (H_out - H) / 1000.0    # [g/s]  (H in g/kg)
+    W_vent = vent_rate * p.rho_air * (H_out - H)             # [g/s] = [kg air/s] x [g/kg]
 
-    dH = (W_et + W_vent) / (V * p.rho_air / 1000.0)          # [g/kg / s]
+    dH = (W_et + W_vent) / (V * p.rho_air)                   # [g/kg/s] = [g/s] / [kg air]
 
     return np.array([dT_air, dT_cov, dH])
 

@@ -136,6 +136,9 @@ def main():
     print(f"  RMS humidity error:    {np.sqrt(np.mean(H_err**2)):.3f} g/kg")
     print(f"  Max temperature error: {np.abs(T_err).max():.3f} °C")
     print(f"  Max humidity error:    {np.abs(H_err).max():.3f} g/kg")
+    k0 = int(2 * 3600 / DT)   # exclude the first 2 h warm-up from 10 °C
+    print(f"  After 2 h warm-up:  RMS T error {np.sqrt(np.mean(T_err[k0:]**2)):.3f} °C, "
+          f"RMS H error {np.sqrt(np.mean(H_err[k0:]**2)):.3f} g/kg")
 
     # ─── Plots ─────────────────────────────────────────────────────────────────
     plot_simulation(

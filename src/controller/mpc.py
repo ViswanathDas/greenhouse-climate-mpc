@@ -28,7 +28,7 @@ class MPCParams:
     dt: float = 150.0                  # step size [s] (2.5 min)
 
     # Tracking weights [T_air, T_cov, H]
-    Q_diag: tuple = (10.0, 0.1, 2.0)
+    Q_diag: tuple = (10.0, 0.1, 10.0)  # humidity weight raised from 2 to 10 after the unit fix
     # Terminal cost (larger = more stable)
     Pf_diag: tuple = (20.0, 0.2, 4.0)
     # Input cost [u_heat, u_vent]
