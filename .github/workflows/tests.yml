@@ -14,6 +14,6 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -r requirements.txt pytest
-      - run: pytest tests/ -q
+      - run: python -m pytest tests/ -q
         env:
           MPLBACKEND: Agg
